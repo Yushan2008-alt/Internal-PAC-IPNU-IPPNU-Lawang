@@ -3,12 +3,6 @@ import Image from "next/image";
 import { CheckCircle2, Sparkles } from "lucide-react";
 
 export function AuthHeroPanel() {
-  const highlights = [
-    "Otonomi departemen dengan transparansi kolektif",
-    "Kedisiplinan kas berbasis gerbang event terpadu",
-    "Monitoring kinerja & LPJ terintegrasi real-time",
-  ];
-
   const stats = [
     { value: "5", label: "Departemen Aktif" },
     { value: "100%", label: "Transparansi Kas" },
@@ -49,10 +43,10 @@ export function AuthHeroPanel() {
       <div className="relative z-10 flex items-center space-x-3.5">
         <div className="relative w-11 h-11 rounded-xl bg-white/15 backdrop-blur-md p-1 border border-white/20 shadow-inner flex items-center justify-center shrink-0">
           <Image
-            src="/images/logo-pac-emblem.png"
+            src="/images/logo-pac-gold-bg.png"
             alt="Logo PAC IPNU IPPNU Lawang"
-            width={38}
-            height={38}
+            width={60}
+            height={60}
             className="object-contain"
             priority
           />
@@ -70,7 +64,7 @@ export function AuthHeroPanel() {
       {/* 2. Hero Content Utama */}
       <div className="relative z-10 my-auto py-4 xl:py-6">
 
-        <h1 className="text-3xl xl:text-5xl font-black text-white tracking-tight leading-[1.15] mb-4 xl:mb-5">
+        <h1 className="text-3xl xl:text-6xl font-black text-white tracking-tight leading-[1.15] mb-4 xl:mb-5">
           Organisasi <br />
           lebih teratur.
         </h1>
@@ -78,21 +72,6 @@ export function AuthHeroPanel() {
         <p className="text-white/80 text-sm xl:text-base max-w-lg leading-relaxed font-normal mb-6 xl:mb-8">
           Platform manajemen internal PAC IPNU IPPNU Lawang yang mengintegrasikan monitoring kinerja departemen, transparansi kas berbasis insentif, dan pelaporan pertanggungjawaban dalam satu dashboard terpadu.
         </p>
-
-        {/* 3 Checklist Keunggulan */}
-        <div className="space-y-3">
-          {highlights.map((item, idx) => (
-            <div key={idx} className="flex items-start space-x-3">
-              <CheckCircle2
-                className="w-4 h-4 xl:w-5 xl:h-5 text-white/90 shrink-0 mt-0.5"
-                aria-hidden="true"
-              />
-              <span className="text-xs xl:text-sm font-medium text-white/90">
-                {item}
-              </span>
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* 3. Footer Statistik 3 Metrik */}

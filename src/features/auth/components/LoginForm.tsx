@@ -65,13 +65,10 @@ export function LoginForm() {
         <span className="block text-xs font-bold tracking-widest text-[#52739d] uppercase mb-2">
           PORTAL MASUK
         </span>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1e293b] tracking-tight leading-tight">
+        <h2 className="text-3xl sm:text-4x1 font-extrabold text-[#1e293b] tracking-tight leading-tight">
           Masuk ke{" "}
           <span className="text-[#52739d]">akun Anda.</span>
         </h2>
-        <p className="mt-2 text-xs sm:text-sm text-slate-500 leading-relaxed">
-          Gunakan email kredensial dan kata sandi yang diberikan oleh pengurus PAC IPNU IPPNU Lawang.
-        </p>
       </div>
 
       {/* Alert Kesalahan Login */}
@@ -93,7 +90,7 @@ export function LoginForm() {
             htmlFor="email"
             className="block text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5"
           >
-            EMAIL PENGURUS
+            EMAIL
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -179,8 +176,7 @@ export function LoginForm() {
       {/* Catatan Keterangan Internal Organisasi */}
       <div className="mt-8 pt-5 border-t border-slate-200/80 text-center">
         <p className="text-[11px] sm:text-xs text-slate-400 leading-relaxed font-medium">
-          Sistem Manajemen Internal PAC IPNU IPPNU Lawang <br />
-          <span className="text-slate-500">Akses terbatas untuk Pengurus Inti & Departemen</span>
+          Sistem Manajemen Internal PAC IPNU IPPNU Lawang
         </p>
       </div>
     </div>

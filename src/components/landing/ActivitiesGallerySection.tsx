@@ -41,16 +41,16 @@ export function ActivitiesGallerySection() {
   ];
 
   return (
-    <section id="galeri" className="py-16 px-4 sm:px-6 lg:px-8 scroll-mt-24">
+    <section id="galeri" className="py-3 px-4 sm:px-6 lg:px-8 scroll-mt-24">
       <div className="max-w-7xl mx-auto space-y-10">
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#52739d] bg-white/70 px-3 py-1 rounded-full border border-[#52739d]/20">
-            Dokumentasi &amp; Berita
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-[#1e293b] tracking-tight text-balance">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/70 border border-[#52739d]/20 text-[#52739d] text-xs font-bold tracking-wide">
+            <span>Dokumentasi &amp; Berita</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-black text-[#ece1d1] tracking-tight text-balance">
             Galeri Agenda &amp; Berita Terkini
           </h2>
-          <p className="text-sm text-[#334155] leading-relaxed text-balance">
+          <p className="text-sm text-[#ffffff] [#ece1d1] leading-relaxed text-balance">
             Kilas balik kegiatan pengkaderan, keorganisasian, dan pengabdian masyarakat
             PAC IPNU IPPNU Lawang.
           </p>

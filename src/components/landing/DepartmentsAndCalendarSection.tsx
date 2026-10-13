@@ -184,10 +184,9 @@ export function DepartmentsAndCalendarSection() {
         {/* Section Header Terpadu */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/70 border border-[#52739d]/20 text-[#52739d] text-xs font-bold tracking-wide">
-            <Sparkles className="w-3.5 h-3.5 text-[#52739d]" aria-hidden="true" />
             <span>Sinergi Kerja &amp; Agenda Organisasi</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-black text-[#1e293b] tracking-tight text-balance">
+          <h2 className="text-3xl sm:text-4xl font-black text-[#3f4738] tracking-tight text-balance">
             5 Departemen &amp; Kalender Kegiatan
           </h2>
           <p className="text-sm text-[#334155] leading-relaxed text-balance">

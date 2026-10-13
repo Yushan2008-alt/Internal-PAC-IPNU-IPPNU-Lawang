@@ -31,6 +31,48 @@ html {
   font-variant-numeric: tabular-nums;
 }
 
+/* Keyframes Carousel Slide Otomatis Selalu ke Kiri */
+@keyframes authSlideInRight {
+  0% {
+    transform: translate3d(100%, 0, 0);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate3d(0%, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes authSlideOutLeft {
+  0% {
+    transform: translate3d(0%, 0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0.85;
+  }
+}
+
+@keyframes authProgressFill {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-auth-slide-in {
+  animation: authSlideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.animate-auth-slide-out {
+  animation: authSlideOutLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
 /* Aksesibilitas preferensi gerak berkurang (Web Interface Guidelines) */
 @media (prefers-reduced-motion: reduce) {
   html {

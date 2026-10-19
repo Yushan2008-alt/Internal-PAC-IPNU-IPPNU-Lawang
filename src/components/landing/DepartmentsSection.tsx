@@ -20,24 +20,24 @@ export function DepartmentsSection() {
       tag: "Pengkaderan & MAKESTA",
     },
     {
-      code: "DKW",
-      name: "Departemen Dakwah & Komunikasi",
+      code: "DAKWAH",
+      name: "Departemen Dakwah",
       icon: Megaphone,
       description:
         "Mengelola media informasi resmi, syiar dakwah digital, publikasi kegiatan, serta relasi komunikasi dengan elemen masyarakat dan banom NU.",
       tag: "Syiar & Media Publikasi",
     },
     {
-      code: "MINAT_BAKAT",
-      name: "Departemen Minat & Bakat",
+      code: "ORSENBUD",
+      name: "Departemen Seni, Budaya & Olahraga",
       icon: Palette,
       description:
         "Wadah penyaluran hobi, olahraga, seni budaya islami (hadrah/sholawat), serta kreativitas teknologi dan inovasi pelajar generasi Z.",
       tag: "Seni, Olahraga & Bakat",
     },
     {
-      code: "EKONOMI",
-      name: "Departemen Kewirausahaan",
+      code: "MEDIA",
+      name: "Departemen Media",
       icon: Coins,
       description:
         "Mendorong kemandirian ekonomi organisasi melalui penggalangan dana kreatif, merchandise resmi PAC, dan pembekalan *entrepreneurship* santri.",

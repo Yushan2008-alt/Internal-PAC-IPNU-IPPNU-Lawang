@@ -118,10 +118,56 @@ CREATE TABLE IF NOT EXISTS public.activity_logs (
 INSERT INTO public.departments (name, code, description) VALUES
 ('Departemen Organisasi', 'ORG', 'Membidangi tata kelola administrasi, penataan ranting, dan keorganisasian internal.'),
 ('Departemen Kaderisasi', 'KADER', 'Membidangi rekrutmen kader baru (MAKESTA), pelatihan, dan pembinaan kader.'),
-('Departemen Dakwah & Komunikasi Warga', 'DKW', 'Membidangi syiar keagamaan, media sosial, publikasi, dan kehumasan.'),
-('Departemen Minat & Bakat', 'MINAT_BAKAT', 'Membidangi pengembangan potensi olahraga, seni, dan kreativitas pelajar.'),
-('Departemen Kewirausahaan / Ekonomi', 'EKONOMI', 'Membidangi kemandirian ekonomi organisasi dan penggalangan dana kreatif.')
-ON CONFLICT (code) DO NOTHING;
+('Departemen Dakwah', 'DKW', 'Membidangi syiar keagamaan Aswaja, kajian pelajar, dan relasi keagamaan.'),
+('Departemen Orsenbud', 'ORSENBUD', 'Membidangi olahraga, seni hadrah/sholawat, serta kebudayaan islami pelajar.'),
+('Departemen Media', 'MEDIA', 'Membidangi media publikasi resmi, dokumentasi visual, desain digital, dan syiar medsos.')
+ON CONFLICT (code) DO UPDATE SET 
+    name = EXCLUDED.name,
+    description = EXCLUDED.description;
+
+-- Data Target Kas Awal (Bulan Berjalan 2026)
+INSERT INTO public.monthly_cash_targets (department_id, month, year, target_amount)
+SELECT id, 10, 2026, 500000.00
+FROM public.departments
+ON CONFLICT (department_id, month, year) DO NOTHING;
+
+-- Data Awal Kader Terbaik & Kinerja 5 Departemen
+INSERT INTO public.performance_records (department_id, month, year, score, cash_percentage, lpj_score, event_score, best_cadre_name, best_cadre_photo_url)
+SELECT 
+    d.id,
+    10,
+    2026,
+    CASE d.code
+        WHEN 'ORG' THEN 92.50
+        WHEN 'KADER' THEN 95.00
+        WHEN 'DKW' THEN 88.00
+        WHEN 'ORSENBUD' THEN 90.00
+        WHEN 'MEDIA' THEN 96.50
+        ELSE 85.00
+    END as score,
+    CASE d.code
+        WHEN 'ORG' THEN 85.00
+        WHEN 'KADER' THEN 90.00
+        WHEN 'DKW' THEN 75.00
+        WHEN 'ORSENBUD' THEN 80.00
+        WHEN 'MEDIA' THEN 95.00
+        ELSE 70.00
+    END as cash_percentage,
+    90.00 as lpj_score,
+    95.00 as event_score,
+    CASE d.code
+        WHEN 'ORG' THEN 'Rekanita Siti Aminah'
+        WHEN 'KADER' THEN 'Rekan Ahmad Fauzi'
+        WHEN 'DKW' THEN 'Rekan M. Rizky Pratama'
+        WHEN 'ORSENBUD' THEN 'Rekan Bagus Santoso'
+        WHEN 'MEDIA' THEN 'Rekanita Nur Laila'
+        ELSE 'Kader Berprestasi'
+    END as best_cadre_name,
+    NULL as best_cadre_photo_url
+FROM public.departments d
+ON CONFLICT (department_id, month, year) DO UPDATE SET
+    score = EXCLUDED.score,
+    best_cadre_name = EXCLUDED.best_cadre_name;
 
 -- ==============================================================================
 -- TRIGGER OTOMATIS: BUAT PROFIL SAAT USER MENDAFTAR / DIBUAT DI SUPABASE AUTH

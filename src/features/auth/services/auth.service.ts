@@ -64,11 +64,13 @@ export async function getCurrentProfile(): Promise<AuthProfile | null> {
     .single();
 
   if (error || !profile) {
+    const meta = user.user_metadata || {};
     return {
       id: user.id,
-      full_name: user.email || "Pengurus",
-      role: "departemen",
-      department_id: null,
+      full_name: (meta.full_name as string) || user.email || "Pengurus PAC",
+      role: (meta.role as "super_admin" | "departemen") || "departemen",
+      department_id: (meta.department_id as string) || null,
+      department_code: (meta.department_code as string) || null,
     };
   }
 

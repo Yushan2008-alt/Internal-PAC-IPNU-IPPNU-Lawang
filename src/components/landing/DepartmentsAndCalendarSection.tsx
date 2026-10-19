@@ -10,7 +10,6 @@ import {
   Megaphone,
   Palette,
   Coins,
-  Sparkles,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { PublicEventItem, PublicEventModal } from "./PublicEventModal";
@@ -40,28 +39,28 @@ export function DepartmentsAndCalendarSection() {
         "Pengkaderan formal (MAKESTA), pembinaan ideologis Aswaja An-Nahdliyah, dan kepemimpinan generasi pelajar muda.",
     },
     {
-      code: "DKW",
-      name: "Departemen Dakwah & Komunikasi",
+      code: "DAKWAH",
+      name: "Departemen Dakwah",
       icon: Megaphone,
       tag: "Syiar & Media Publikasi",
       description:
         "Media informasi resmi, syiar dakwah digital, publikasi agenda kegiatan, serta relasi komunikasi dengan banom NU.",
     },
     {
-      code: "MINAT_BAKAT",
-      name: "Departemen Minat & Bakat",
+      code: "ORSENBUD",
+      name: "Departemen Seni Budaya & Olahraga",
       icon: Palette,
-      tag: "Seni, Olahraga & Bakat",
+      tag: "Seni, Budaya & Olahraga",
       description:
         "Penyaluran hobi, olahraga, seni budaya islami (hadrah/sholawat), serta kreativitas teknologi pelajar Nahdliyin.",
     },
     {
-      code: "EKONOMI",
-      name: "Departemen Kewirausahaan",
+      code: "MEDIA",
+      name: "Departemen Media",
       icon: Coins,
-      tag: "Kemandirian Kas & Usaha",
+      tag: "Media Informasi",
       description:
-        "Kemandirian ekonomi organisasi melalui merchandise resmi PAC, penggalangan dana kreatif, dan entrepreneurship santri.",
+        "Media informasi resmi, syiar dakwah digital, publikasi agenda kegiatan, serta relasi komunikasi dengan banom NU.",
     },
   ];
 

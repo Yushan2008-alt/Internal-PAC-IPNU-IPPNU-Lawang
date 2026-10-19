@@ -39,7 +39,7 @@ export function DepartmentHighlightBanner({
               <span>Otoritas Penuh Super Admin</span>
             </div>
             <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
-              Pusat Kendali Sistem Manajemen Internal PAC Lawang
+              Sistem Manajemen Internal PAC Lawang
             </h2>
           </div>
 

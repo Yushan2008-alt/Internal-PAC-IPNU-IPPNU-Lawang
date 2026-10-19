@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { FileText, ArrowLeft } from "lucide-react";
+import { ArrowLeft, FileText } from "lucide-react";
 
 export default function LpjPage() {
   return (
@@ -25,16 +25,24 @@ export default function LpjPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center space-y-3 shadow-xs">
+      <div className="bg-white rounded-2xl border border-slate-200/90 p-8 sm:p-12 text-center max-w-xl mx-auto shadow-xs space-y-4">
         <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
           <FileText className="w-7 h-7" />
         </div>
         <h2 className="text-lg font-extrabold text-slate-800">
           Modul Pelaporan LPJ Terpusat
         </h2>
-        <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-          Unggah dokumen LPJ (PDF/dokumen) setelah event terlaksana. Super Admin dapat mereview, memberikan catatan revisi, dan menyetujui laporan untuk dimasukkan ke evaluasi kinerja.
+        <p className="text-xs text-slate-500 leading-relaxed">
+          Halaman ini disederhanakan sementara karena fokus utama pengembangan saat ini diprioritaskan pada Dashboard terpadu PAC IPNU IPPNU Lawang.
         </p>
+        <div className="pt-2">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-[#52739d] text-white text-xs font-bold hover:bg-[#3d5a7d] transition-colors shadow-xs"
+          >
+            Kembali ke Dashboard Utama
+          </Link>
+        </div>
       </div>
     </div>
   );

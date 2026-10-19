@@ -13,159 +13,40 @@ import { getCurrentProfile, AuthProfile } from "@/features/auth/services/auth.se
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, TrendingUp, Wallet } from "lucide-react";
 
-// Default Fallback Data untuk 5 Departemen Resmi PAC Lawang (Top-level constants)
-const DEFAULT_CADRES: CadreItem[] = [
-  {
-    departmentCode: "ORG",
-    departmentName: "Departemen Organisasi",
-    cadreName: "Rekanita Siti Aminah",
-    photoUrl: null,
-    score: 92.5,
-  },
-  {
-    departmentCode: "KADER",
-    departmentName: "Departemen Kaderisasi",
-    cadreName: "Rekan Ahmad Fauzi",
-    photoUrl: null,
-    score: 95.0,
-  },
-  {
-    departmentCode: "ORSENBUD",
-    departmentName: "Departemen Orsenbud",
-    cadreName: "Rekan Bagus Santoso",
-    photoUrl: null,
-    score: 90.0,
-  },
-  {
-    departmentCode: "DKW",
-    departmentName: "Departemen Dakwah",
-    cadreName: "Rekan M. Rizky Pratama",
-    photoUrl: null,
-    score: 88.0,
-  },
-  {
-    departmentCode: "MEDIA",
-    departmentName: "Departemen Media",
-    cadreName: "Rekanita Nur Laila",
-    photoUrl: null,
-    score: 96.5,
-  },
-];
-
-const DEFAULT_PERFORMANCE: DepartmentPerformanceItem[] = [
-  {
-    code: "MEDIA",
-    name: "Departemen Media",
-    score: 96.5,
-    cashPercentage: 95,
-    lpjStatus: "Lengkap",
-    rank: 1,
-  },
-  {
-    code: "KADER",
-    name: "Departemen Kaderisasi",
-    score: 95.0,
-    cashPercentage: 90,
-    lpjStatus: "Lengkap",
-    rank: 2,
-  },
-  {
-    code: "ORG",
-    name: "Departemen Organisasi",
-    score: 92.5,
-    cashPercentage: 85,
-    lpjStatus: "Lengkap",
-    rank: 3,
-  },
-  {
-    code: "ORSENBUD",
-    name: "Departemen Orsenbud",
-    score: 90.0,
-    cashPercentage: 80,
-    lpjStatus: "Proses",
-    rank: 4,
-  },
-  {
-    code: "DKW",
-    name: "Departemen Dakwah",
-    score: 88.0,
-    cashPercentage: 75,
-    lpjStatus: "Proses",
-    rank: 5,
-  },
-];
-
-const DEFAULT_CASH: DepartmentCashItem[] = [
-  {
-    code: "ORG",
-    name: "Departemen Organisasi",
-    targetAmount: 500000,
-    collectedAmount: 425000,
-    percentage: 85,
-    isUnlocked: true,
-  },
-  {
-    code: "KADER",
-    name: "Departemen Kaderisasi",
-    targetAmount: 500000,
-    collectedAmount: 450000,
-    percentage: 90,
-    isUnlocked: true,
-  },
-  {
-    code: "DKW",
-    name: "Departemen Dakwah",
-    targetAmount: 500000,
-    collectedAmount: 375000,
-    percentage: 75,
-    isUnlocked: true,
-  },
-  {
-    code: "ORSENBUD",
-    name: "Departemen Orsenbud",
-    targetAmount: 500000,
-    collectedAmount: 400000,
-    percentage: 80,
-    isUnlocked: true,
-  },
-  {
-    code: "MEDIA",
-    name: "Departemen Media",
-    targetAmount: 500000,
-    collectedAmount: 475000,
-    percentage: 95,
-    isUnlocked: true,
-  },
-];
-
 export default function DashboardPage() {
   const [profile, setProfile] = useState<AuthProfile | null>(null);
   const [cadres, setCadres] = useState<CadreItem[]>([]);
   const [performanceData, setPerformanceData] = useState<DepartmentPerformanceItem[]>([]);
   const [cashData, setCashData] = useState<DepartmentCashItem[]>([]);
   const [events, setEvents] = useState<PublicEventItem[]>([]);
+  const [mobileVisualTab, setMobileVisualTab] = useState<"chart" | "calendar">("chart");
   const [loading, setLoading] = useState(true);
 
+  // Muat data awal dan daftarkan sinkronisasi Realtime Supabase
   useEffect(() => {
+    let isMounted = true;
+
     async function loadDashboardData() {
       try {
-        setLoading(true);
         const userProfile = await getCurrentProfile();
+        if (!isMounted) return;
         setProfile(userProfile);
 
         const supabase = createClient();
 
-        // 1. Ambil data kinerja & kader terbaik
+        // 1. Ambil data kinerja & kader terbaik dari database Supabase
         const { data: perfRows } = await supabase
           .from("performance_records")
           .select("*, departments(name, code)")
           .order("score", { ascending: false });
 
+        if (!isMounted) return;
+
         if (perfRows && perfRows.length > 0) {
           const loadedCadres: CadreItem[] = perfRows.map((r) => ({
             departmentCode: (r.departments as { code?: string })?.code || "ORG",
             departmentName: (r.departments as { name?: string })?.name || "Departemen",
-            cadreName: r.best_cadre_name || "Kader Terbaik",
+            cadreName: r.best_cadre_name || "Belum Ditentukan",
             photoUrl: r.best_cadre_photo_url,
             score: Number(r.score) || 0,
           }));
@@ -181,39 +62,51 @@ export default function DashboardPage() {
           }));
           setPerformanceData(loadedPerf);
         } else {
-          setCadres(DEFAULT_CADRES);
-          setPerformanceData(DEFAULT_PERFORMANCE);
+          setCadres([]);
+          setPerformanceData([]);
         }
 
-        // 2. Ambil data kas
+        // 2. Ambil data target kas bulanan & transaksi kas dari database Supabase
         const { data: targetRows } = await supabase
           .from("monthly_cash_targets")
           .select("*, departments(name, code)");
 
+        const { data: txRows } = await supabase
+          .from("cash_transactions")
+          .select("department_id, amount, is_approved");
+
+        if (!isMounted) return;
+
         if (targetRows && targetRows.length > 0) {
           const loadedCash: DepartmentCashItem[] = targetRows.map((t) => {
-            const target = Number(t.target_amount) || 500000;
-            const collected = Math.round(target * 0.85);
-            const pct = Math.round((collected / target) * 100);
+            const target = Number(t.target_amount) || 0;
+            const deptApprovedTx = txRows
+              ? txRows
+                  .filter((tx) => tx.department_id === t.department_id)
+                  .reduce((sum, tx) => sum + Number(tx.amount || 0), 0)
+              : 0;
+            const pct = target > 0 ? Math.round((deptApprovedTx / target) * 100) : 0;
             return {
               code: (t.departments as { code?: string })?.code || "ORG",
               name: (t.departments as { name?: string })?.name || "Departemen",
               targetAmount: target,
-              collectedAmount: collected,
+              collectedAmount: deptApprovedTx,
               percentage: pct,
               isUnlocked: pct >= 75,
             };
           });
           setCashData(loadedCash);
         } else {
-          setCashData(DEFAULT_CASH);
+          setCashData([]);
         }
 
-        // 3. Ambil data event
+        // 3. Ambil data event langsung dari tabel events Supabase (Sinkron dengan Kalender Landing Page)
         const { data: eventRows } = await supabase
           .from("events")
           .select("*, departments(name)")
           .order("event_date", { ascending: true });
+
+        if (!isMounted) return;
 
         if (eventRows && eventRows.length > 0) {
           setEvents(
@@ -228,38 +121,64 @@ export default function DashboardPage() {
             }))
           );
         } else {
-          setEvents([
-            {
-              id: "ev-1",
-              title: "MAKESTA Raya Pelajar Lawang",
-              departmentName: "Departemen Kaderisasi",
-              eventDate: "2026-10-18",
-              location: "Gedung MWC NU Lawang",
-              description: "Pengkaderan formal tingkat PAC dengan pembinaan ideologis Aswaja An-Nahdliyah.",
-              status: "scheduled",
-            },
-            {
-              id: "ev-2",
-              title: "Kajian Rutin & Sholawat Diba'iyah",
-              departmentName: "Departemen Dakwah",
-              eventDate: "2026-10-24",
-              location: "Masjid Baiturrahim Lawang",
-              description: "Syiar dakwah Aswaja dan silaturahmi kader bersama pengurus ranting.",
-              status: "scheduled",
-            },
-          ]);
+          setEvents([]);
         }
       } catch (err) {
-        console.error("Gagal memuat data dashboard:", err);
-        setCadres(DEFAULT_CADRES);
-        setPerformanceData(DEFAULT_PERFORMANCE);
-        setCashData(DEFAULT_CASH);
+        console.error("Gagal memuat data dashboard real-time:", err);
+        if (isMounted) {
+          setCadres([]);
+          setPerformanceData([]);
+          setCashData([]);
+          setEvents([]);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
     loadDashboardData();
+
+    const supabase = createClient();
+
+    // Channel Real-Time Supabase: Otomatis perbarui dashboard saat data diinput/diubah
+    const channel = supabase
+      .channel("dashboard_realtime_sync")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "performance_records" },
+        () => {
+          loadDashboardData();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "monthly_cash_targets" },
+        () => {
+          loadDashboardData();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "cash_transactions" },
+        () => {
+          loadDashboardData();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "events" },
+        () => {
+          loadDashboardData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      isMounted = false;
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   // WebMCP Integration (Client-Side Tool Exposure on document.modelContext)
@@ -276,7 +195,7 @@ export default function DashboardPage() {
           w.modelContext.registerTool({
             name: "get_dashboard_summary",
             description:
-              "Retrieve overall performance average, cash collection rate, 5 best cadres, and upcoming calendar events for PAC IPNU IPPNU Lawang.",
+              "Retrieve overall performance average, cash collection rate, best cadres, and upcoming calendar events for PAC IPNU IPPNU Lawang.",
             readOnlyHint: true,
             inputSchema: {
               type: "object",
@@ -285,10 +204,13 @@ export default function DashboardPage() {
             execute: async () => {
               return {
                 averagePerformance:
-                  performanceData.reduce((acc, p) => acc + p.score, 0) /
-                  (performanceData.length || 1),
+                  performanceData.length > 0
+                    ? performanceData.reduce((acc, p) => acc + p.score, 0) / performanceData.length
+                    : 0,
                 averageCash:
-                  cashData.reduce((acc, c) => acc + c.percentage, 0) / (cashData.length || 1),
+                  cashData.length > 0
+                    ? cashData.reduce((acc, c) => acc + c.percentage, 0) / cashData.length
+                    : 0,
                 bestCadresCount: cadres.length,
                 eventsCount: events.length,
               };
@@ -301,28 +223,28 @@ export default function DashboardPage() {
     }
   }, [performanceData, cashData, cadres, events]);
 
-  // Perhitungan Rata-rata
+  // Perhitungan Rata-rata Realistis (0 jika belum ada data yang diinput)
   const averageScore =
     performanceData.length > 0
       ? performanceData.reduce((acc, item) => acc + item.score, 0) / performanceData.length
-      : 91.5;
+      : 0;
 
   const averageCashPercentage =
     cashData.length > 0
       ? cashData.reduce((acc, item) => acc + item.percentage, 0) / cashData.length
-      : 84.0;
+      : 0;
 
-  // Temukan persentase kas milik departemen user (jika bukan super admin)
-  const userDeptCash = cashData.find(
-    (c) => c.code === profile?.department_code
-  )?.percentage ?? 85;
+  // Persentase kas milik departemen user aktif (jika bukan super admin)
+  const userDeptCash = profile?.department_code
+    ? (cashData.find((c) => c.code === profile.department_code)?.percentage ?? 0)
+    : averageCashPercentage;
 
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-3">
         <Loader2 className="w-8 h-8 animate-spin text-[#52739d]" />
         <span className="text-xs font-bold text-slate-500">
-          Memuat data Dashboard PAC IPNU IPPNU Lawang...
+          Memuat data real-time Dashboard PAC IPNU IPPNU Lawang...
         </span>
       </div>
     );
@@ -341,12 +263,12 @@ export default function DashboardPage() {
       {/* 2. Bagian 5 Frame Foto Kader Terbaik Departemen */}
       <BestCadresSection cadres={cadres} />
 
-      {/* 3. Ringkasan Metrik Cepat Organisasi (Format Stat Card SIMMAS) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+      {/* 3. Ringkasan Metrik Cepat Organisasi (2 Kolom Kotak & Flexible Height) */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-6">
         <StatMetricCard
           title="Rata-Rata Kinerja Departemen"
-          value={`${averageScore.toFixed(1)}%`}
-          subtitle="— Data real-time"
+          value={averageScore > 0 ? `${averageScore.toFixed(1)}%` : "0.0%"}
+          subtitle={performanceData.length > 0 ? "— Data real-time" : "— Belum ada data penilaian"}
           icon={TrendingUp}
           iconBgColor="bg-[#52739d]/10"
           iconColor="text-[#52739d]"
@@ -358,8 +280,8 @@ export default function DashboardPage() {
 
         <StatMetricCard
           title="Rata-Rata Kas Terkumpul"
-          value={`${averageCashPercentage.toFixed(1)}%`}
-          subtitle="— Data real-time"
+          value={averageCashPercentage > 0 ? `${averageCashPercentage.toFixed(1)}%` : "0.0%"}
+          subtitle={cashData.length > 0 ? "— Data real-time" : "— Belum ada transaksi kas"}
           icon={Wallet}
           iconBgColor="bg-emerald-50"
           iconColor="text-emerald-600"
@@ -370,15 +292,59 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* 4. Visualisasi Grafik Tren & Kalender Interaktif (Point 5.2 Project Brief) */}
+      {/* 4. Tab Switcher Khusus Mobile (< lg) untuk Visualisasi Tren & Kalender (Sama seperti Landing Page) */}
+      <div className="lg:hidden flex justify-center pt-1">
+        <div
+          role="tablist"
+          aria-label="Pilihan tampilan visualisasi dashboard mobile"
+          className="inline-flex p-1 rounded-xl bg-white/80 border border-[#52739d]/20 shadow-xs"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mobileVisualTab === "chart"}
+            onClick={() => setMobileVisualTab("chart")}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${
+              mobileVisualTab === "chart"
+                ? "bg-[#52739d] text-white shadow-xs"
+                : "text-[#2d3e52] hover:text-[#52739d]"
+            }`}
+          >
+            📈 Tren Kinerja
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mobileVisualTab === "calendar"}
+            onClick={() => setMobileVisualTab("calendar")}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${
+              mobileVisualTab === "calendar"
+                ? "bg-[#52739d] text-white shadow-xs"
+                : "text-[#2d3e52] hover:text-[#52739d]"
+            }`}
+          >
+            📅 Kalender Kegiatan
+          </button>
+        </div>
+      </div>
+
+      {/* 5. Visualisasi Grafik Tren & Kalender Interaktif (Desktop Berdampingan, Mobile Beralih Tab) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
         {/* KOLOM KIRI: Grafik Tren Kinerja 6-Bulanan Recharts */}
-        <div className="lg:col-span-6 flex flex-col h-full">
+        <div
+          className={`lg:col-span-6 flex flex-col h-full ${
+            mobileVisualTab === "chart" ? "flex" : "hidden lg:flex"
+          }`}
+        >
           <PerformanceLineChart />
         </div>
 
         {/* KOLOM KANAN: Kalender Bulanan Interaktif ("Kalender Rumah") */}
-        <div className="lg:col-span-6 flex flex-col h-full">
+        <div
+          className={`lg:col-span-6 flex flex-col h-full ${
+            mobileVisualTab === "calendar" ? "flex" : "hidden lg:flex"
+          }`}
+        >
           <DashboardCalendarCard events={events} />
         </div>
       </div>

@@ -13,10 +13,12 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { PublicEventItem, PublicEventModal } from "./PublicEventModal";
+import { BestCadresSection, CadreItem } from "./BestCadresSection";
 
 export function DepartmentsAndCalendarSection() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<PublicEventItem[]>([]);
+  const [cadres, setCadres] = useState<CadreItem[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<PublicEventItem | null>(null);
   const [mobileTab, setMobileTab] = useState<"calendar" | "departments">("calendar");
 
@@ -64,19 +66,24 @@ export function DepartmentsAndCalendarSection() {
     },
   ];
 
-  // Ambil data agenda dari Supabase (otomatis dari webhook saat kas departemen >= 75%)
+  // Ambil data agenda dan kader terbaik dari Supabase
   useEffect(() => {
-    async function loadEvents() {
+    let isMounted = true;
+    const supabase = createClient();
+
+    async function loadData() {
       try {
-        const supabase = createClient();
-        const { data, error } = await supabase
+        // 1. Ambil data agenda kalender
+        const { data: eventData, error: eventErr } = await supabase
           .from("events")
           .select("*, departments(name)")
           .order("event_date", { ascending: true });
 
-        if (!error && data && data.length > 0) {
+        if (!isMounted) return;
+
+        if (!eventErr && eventData && eventData.length > 0) {
           setEvents(
-            data.map((item) => ({
+            eventData.map((item) => ({
               id: item.id,
               title: item.title,
               departmentName:
@@ -91,12 +98,60 @@ export function DepartmentsAndCalendarSection() {
         } else {
           setEvents([]);
         }
+
+        // 2. Ambil data kader terbaik dari rekam kinerja departemen
+        const { data: perfRows, error: perfErr } = await supabase
+          .from("performance_records")
+          .select("*, departments(name, code)")
+          .order("score", { ascending: false });
+
+        if (!isMounted) return;
+
+        if (!perfErr && perfRows && perfRows.length > 0) {
+          const loadedCadres: CadreItem[] = perfRows.map((r) => ({
+            departmentCode: (r.departments as { code?: string })?.code || "ORG",
+            departmentName: (r.departments as { name?: string })?.name || "Departemen",
+            cadreName: r.best_cadre_name || "Belum Ditentukan",
+            photoUrl: r.best_cadre_photo_url,
+            score: Number(r.score) || 0,
+          }));
+          setCadres(loadedCadres);
+        } else {
+          setCadres([]);
+        }
       } catch {
-        setEvents([]);
+        if (isMounted) {
+          setEvents([]);
+          setCadres([]);
+        }
       }
     }
 
-    loadEvents();
+    loadData();
+
+    // Channel Real-Time Supabase: Otomatis sinkron saat event atau kader terbaik diupdate
+    const channel = supabase
+      .channel("landing_departments_realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "events" },
+        () => {
+          loadData();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "performance_records" },
+        () => {
+          loadData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      isMounted = false;
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const year = currentDate.getFullYear();
@@ -193,6 +248,9 @@ export function DepartmentsAndCalendarSection() {
             untuk koordinasi agenda tanpa tumpang tindih.
           </p>
         </div>
+
+        {/* Bagian 5 Frame Foto Kader Terbaik Departemen */}
+        <BestCadresSection cadres={cadres} />
 
         {/* Tab Switcher khusus Mobile (< lg) */}
         <div className="lg:hidden flex justify-center">

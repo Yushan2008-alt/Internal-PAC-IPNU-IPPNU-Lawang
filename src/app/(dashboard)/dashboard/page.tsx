@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { BestCadresSection, CadreItem } from "@/components/dashboard/BestCadresSection";
+import { type CadreItem } from "@/components/landing/BestCadresSection";
 import { DepartmentHighlightBanner } from "@/components/dashboard/DepartmentHighlightBanner";
 import { StatMetricCard } from "@/components/dashboard/StatMetricCard";
 import { DepartmentPerformanceItem } from "@/components/dashboard/PerformanceSummaryCard";
@@ -260,10 +260,7 @@ export default function DashboardPage() {
         overallAverageCash={averageCashPercentage}
       />
 
-      {/* 2. Bagian 5 Frame Foto Kader Terbaik Departemen */}
-      <BestCadresSection cadres={cadres} />
-
-      {/* 3. Ringkasan Metrik Cepat Organisasi (2 Kolom Kotak & Flexible Height) */}
+      {/* 2. Ringkasan Metrik Cepat Organisasi (2 Kolom Kotak & Flexible Height) */}
       <div className="grid grid-cols-2 gap-3 sm:gap-6">
         <StatMetricCard
           title="Rata-Rata Kinerja Departemen"
@@ -292,7 +289,7 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* 4. Tab Switcher Khusus Mobile (< lg) untuk Visualisasi Tren & Kalender (Sama seperti Landing Page) */}
+      {/* 3. Tab Switcher Khusus Mobile (< lg) untuk Visualisasi Tren & Kalender (Sama seperti Landing Page) */}
       <div className="lg:hidden flex justify-center pt-1">
         <div
           role="tablist"
@@ -328,7 +325,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 5. Visualisasi Grafik Tren & Kalender Interaktif (Desktop Berdampingan, Mobile Beralih Tab) */}
+      {/* 4. Visualisasi Grafik Tren & Kalender Interaktif (Desktop Berdampingan, Mobile Beralih Tab) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
         {/* KOLOM KIRI: Grafik Tren Kinerja 6-Bulanan Recharts */}
         <div

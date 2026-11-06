@@ -28,7 +28,6 @@ export function DepartmentsAndCalendarSection() {
       code: "ORG",
       name: "Departemen Organisasi",
       icon: Briefcase,
-      tag: "Tata Kelola & Struktur",
       description:
         "Pengelolaan keorganisasian, tata persuratan, konsolidasi Pimpinan Ranting (PR) dan Pimpinan Komisariat (PK) se-Lawang.",
     },
@@ -300,11 +299,7 @@ export function DepartmentsAndCalendarSection() {
             <div className="flex items-center justify-between pb-2 border-b border-[#52739d]/15 shrink-0 mb-3">
               <h3 className="text-base font-extrabold text-[#1e293b] flex items-center gap-2">
                 <span>5 Departemen Utama</span>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#52739d]/10 text-[#52739d]">
-                  PAC Lawang
-                </span>
               </h3>
-              <span className="text-xs text-[#64748b]">Otonomi Program</span>
             </div>
 
             <div className="flex flex-col justify-between flex-1 gap-3">
@@ -330,9 +325,6 @@ export function DepartmentsAndCalendarSection() {
                         </div>
                       </div>
 
-                      <span className="text-[10px] font-bold text-[#52739d] bg-[#ece1d1]/80 border border-[#52739d]/20 px-2 py-0.5 rounded-full shrink-0">
-                        {dept.tag}
-                      </span>
                     </div>
 
                     <p className="text-xs text-[#475569] leading-relaxed line-clamp-2">

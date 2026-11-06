@@ -99,7 +99,7 @@ export function LandingHero() {
                 {/* Logo Transparan Emas/Champagne Baru PAC Lawang */}
                 <div className="relative w-full h-full p-2 flex items-center justify-center">
                   <Image
-                    src="/images/logo-pac-gold-bg.png"
+                    src="/images/logo-pac-gold-bright.png"
                     alt="Logo Resmi PAC IPNU IPPNU Kecamatan Lawang"
                     width={420}
                     height={420}
